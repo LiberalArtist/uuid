@@ -5,7 +5,7 @@
 (define version "0.0")
 (define pkg-authors '(philip))
 
-(define deps '(["base" #:version "6.3"]))
+(define deps '(["base" #:version "6.4"]))
 (define build-deps '("scribble-lib"
                      "racket-doc"
                      "srfi-lite-lib"
