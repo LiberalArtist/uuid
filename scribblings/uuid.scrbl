@@ -68,8 +68,8 @@ which obtains cryptographic-quality randomness from the operating system.
  Equivalent to:
  @(racketblock
    (λ (v)
-     (and (string? v)
-          (strict-uuid-string? (string->symbol v)))))
+     (and (symbol? v)
+          (strict-uuid-string? (symbol->string v)))))
 
  @examples[
  #:eval (make-uuid-eval)
