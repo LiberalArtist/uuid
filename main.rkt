@@ -144,13 +144,21 @@
 
 ;; The variant field determines the layout of the UUID.
 ;; The following table lists the contents of the variant field ...
-;;  ; fixed erratum
+;; Msb0  Msb1  Msb2  Description
+;;  1     0     x    The variant specified in this document.
+;; BUT SEE erratum 5560 (unconfirmed as of 2019-10-11),
+;;   https://www.rfc-editor.org/errata/eid5560
+;; which claims it should be:
 ;; Msb0  Msb1  Msb2  Description
 ;;  1     0     0    The variant specified in this document.
+;; This seems to mostly matter for v3 and v5 UUIDs,
+;; as I guess Python and libuuid do different things.
+;; Since it isn't a big issue for v4 UUIDs,
+;; I will ignore this, at least unless the erratum is confirmed.
 
 (define (byte-set-variant b)
   (bitwise-ior #b10000000
-               (bitwise-and #b00111111 b)))
+               (bitwise-and #b00111111 b))) ;; see above re erratum 5560
 
 (module+ test
   (test-case
@@ -161,11 +169,11 @@
       (define s (byte->binary b))
       (define b* (byte-set-variant b))
       (define s* (byte->binary b*))
-      (check-regexp-match #rx"^10" s*)
+      (check-regexp-match #rx"^10" s*) ;; see above re erratum 5560
       (check-regexp-match #rx"^[89ab]"
                           (bytes->hex-string (bytes b*)))
-      (check-equal? (substring s* 2)
-                    (substring s 2))))))
+      (check-equal? (substring s* 2) ;; see above re erratum 5560
+                    (substring s 2)))))) ;; see above re erratum 5560
 
 ;; The version number is in the most significant 4 bits of the time
 ;; stamp [erratum ommited].
