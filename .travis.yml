@@ -2,9 +2,6 @@ language: c
 
 # Based from: https://github.com/greghendershott/travis-racket
 
-# Optional: Remove to use Travis CI's older infrastructure.
-sudo: false
-
 env:
   global:
     # Supply a global RACKET_DIR environment variable. This is where
@@ -22,6 +19,8 @@ env:
     # versions.
     - RACKET_VERSION=HEAD
     - RACKET_VERSION=HEADCS
+    - RACKET_VERSION=7.3
+    - RACKET_VERSION=7.2
     - RACKET_VERSION=7.1
     - RACKET_VERSION=7.0
     - RACKET_VERSION=6.12
