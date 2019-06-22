@@ -1,5 +1,6 @@
 #lang info
 
+(define pkg-name "uuid")
 (define collection "uuid")
 (define pkg-desc "Generate random UUIDs in pure Racket")
 (define version "0.0")
