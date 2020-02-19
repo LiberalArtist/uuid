@@ -2,8 +2,7 @@
 
 @title{@racketmodname[uuid]: Universally Unique Identifiers}
 @author[(author+email @elem{Philip M@superscript{c}Grath}
-                      "philip@philipmcgrath.com"
-                      #:obfuscate? #t)]
+                      "philip@philipmcgrath.com")]
 @defmodule[uuid]
 
 @(require scribble/example
