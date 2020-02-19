@@ -9,7 +9,6 @@
 (define deps '(["base" #:version "7.6"]))
 (define build-deps '("scribble-lib"
                      "racket-doc"
-                     "srfi-lite-lib"
                      "rackunit-lib"))
 
 (define scribblings '(("scribblings/uuid.scrbl" ())))

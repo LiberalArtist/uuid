@@ -25,7 +25,7 @@
 
 (module+ test
   (require rackunit
-           (only-in srfi/13 string-pad)))
+           (submod "..")))
 
 (define (uuid-symbol)
   (define s (string->symbol (uuid-generate*)))
@@ -140,7 +140,11 @@
 
 (module+ test
   (define (byte->binary b)
-    (string-pad (number->string b 2) 8 #\0))
+    (define base (number->string b 2))
+    (define target (- 8 (string-length base)))
+    (if (zero? target)
+        base
+        (string-append-immutable (make-string target #\0) base)))
   (test-case
    "byte->binary"
    (for ([b (in-range 256)])
