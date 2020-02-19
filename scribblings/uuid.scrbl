@@ -12,7 +12,7 @@
                      racket/random))
 
 The @racketmodname[uuid] library provides functions for generating
-@deftech{UUIDs} (Universally Unique Identifiers),
+@deftech{UUIDs} (@italic{u}niversally @italic{u}nique @italic{id}entifiers),
 implemented in pure Racket.
 
 Specifically, @racket[uuid-symbol] and @racket[uuid-string]

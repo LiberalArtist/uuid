@@ -1,8 +1,15 @@
 #lang racket/base
 
+;; TODO: Does the hash actually save time,
+;; since we have symbol->immutable-string now
+;; and don't have to allocate?
+;; Should do a benchmark ...
+
 (require racket/random
+         racket/symbol
          racket/contract
-         file/sha1)
+         (only-in file/sha1
+                  bytes->hex-string))
 
 (provide uuid-symbol?
          uuid-string?
@@ -66,7 +73,7 @@
   (cond
     [(hash-has-key? known-uuid-symbols v)]
     [(and (symbol? v)
-          (regexp-match? uuid-px (symbol->string v)))
+          (regexp-match? uuid-px (symbol->immutable-string v)))
      (hash-set! known-uuid-symbols v #t)
      #t]
     [else
