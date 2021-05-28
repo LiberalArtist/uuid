@@ -17,8 +17,7 @@ env:
     # Supply more than one RACKET_VERSION (as in the example below) to
     # create a Travis-CI build matrix to test against multiple Racket
     # versions.
-    - RACKET_VERSION=HEAD
-    - RACKET_VERSION=HEADCS
+    - RACKET_VERSION=7.7
     - RACKET_VERSION=7.6
 
 matrix:
