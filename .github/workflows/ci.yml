@@ -11,16 +11,24 @@ jobs:
         racket-version:
           - "stable"
           - "current"
+          - "8.7" # Debian 12 Bookorm
+          - "8.2" # Ubuntu 22.04
           - "8.0"
+          - "7.9" # Debian 11 Bullseye
           - "7.7"
           - "7.6"
+        variant: [ "" ] # default for the version
+        include:
+          - racket-version: "current"
+            variant: "BC"
     steps:
       - name: Checkout
         uses: actions/checkout@master
       - name: Install Racket
-        uses: Bogdanp/setup-racket@v1.3.1
+        uses: Bogdanp/setup-racket@v1.10
         with:
           version: ${{ matrix.racket-version }}
+          variant: ${{ matrix.variant }}
           architecture: "x64"
           distribution: "full"
       - name: Install Package and its Dependencies
@@ -33,7 +41,6 @@ jobs:
 # NOTES:
 # ------
 # Do I want `--unused-pkg-deps`?
-# I would test `racket-variant: "BC"` if I required Racket 8.0.
 # On Travis, I had this:
 ###after_success:
 ### - raco setup --check-pkg-deps --pkgs adjutor
