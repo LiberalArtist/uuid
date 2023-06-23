@@ -4,11 +4,13 @@ env:
   RKT_PKG: uuid
 jobs:
   build:
-    name: "Build on Racket '${{ matrix.racket-version }}'"
+    name: >-
+      Build on Racket
+      '${{ join([matrix.version,matrix.vm], (matrix.vm && ' ') || '') }}'
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        racket-version:
+        version:
           - "stable"
           - "current"
           - "8.7" # Debian 12 Bookorm
@@ -17,18 +19,18 @@ jobs:
           - "7.9" # Debian 11 Bullseye
           - "7.7"
           - "7.6"
-        variant: [ "" ] # default for the version
+        vm: [ "" ] # default for the version
         include:
-          - racket-version: "current"
-            variant: "BC"
+          - version: "current"
+            vm: "BC"
     steps:
       - name: Checkout
         uses: actions/checkout@master
       - name: Install Racket
         uses: Bogdanp/setup-racket@v1.10
         with:
-          version: ${{ matrix.racket-version }}
-          variant: ${{ matrix.variant }}
+          version: ${{ matrix.version }}
+          variant: ${{ matrix.vm }}
           architecture: "x64"
           distribution: "full"
       - name: Install Package and its Dependencies
