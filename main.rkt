@@ -8,6 +8,7 @@
 (require racket/random
          racket/symbol
          racket/contract
+         "private/variant-and-version.rkt"
          (only-in file/sha1
                   bytes->hex-string))
 
@@ -138,91 +139,13 @@
    (extract-hex 8) (extract-hex 9) "-"
    (extract-hex 10 15)))
 
-(module+ test
-  (define (byte->binary b)
-    (define base (number->string b 2))
-    (define target (- 8 (string-length base)))
-    (if (zero? target)
-        base
-        (string-append-immutable (make-string target #\0) base)))
-  (test-case
-   "byte->binary"
-   (for ([b (in-range 256)])
-     (test-case
-      (format "b = ~v" b)
-      (check-eqv? (string->number (byte->binary b) 2)
-                  b)))))
-
-;; The variant field determines the layout of the UUID.
-;; The following table lists the contents of the variant field ...
-;; Msb0  Msb1  Msb2  Description
-;;  1     0     x    The variant specified in this document.
-;; BUT SEE erratum 5560 (unconfirmed as of 2019-10-11),
-;;   https://www.rfc-editor.org/errata/eid5560
-;; which claims it should be:
-;; Msb0  Msb1  Msb2  Description
-;;  1     0     0    The variant specified in this document.
-;; This seems to mostly matter for v3 and v5 UUIDs,
-;; as I guess Python and libuuid do different things.
-;; Since it isn't a big issue for v4 UUIDs,
-;; I will ignore this, at least unless the erratum is confirmed.
-
-(define (byte-set-variant b)
-  (bitwise-ior #b10000000
-               (bitwise-and #b00111111 b))) ;; see above re erratum 5560
-
-(module+ test
-  (test-case
-   "byte-set-variant"
-   (for ([b (in-range 256)])
-     (test-case
-      (format "b = ~v" b)
-      (define s (byte->binary b))
-      (define b* (byte-set-variant b))
-      (define s* (byte->binary b*))
-      (check-regexp-match #rx"^10" s*) ;; see above re erratum 5560
-      (check-regexp-match #rx"^[89ab]"
-                          (bytes->hex-string (bytes b*)))
-      (check-equal? (substring s* 2) ;; see above re erratum 5560
-                    (substring s 2)))))) ;; see above re erratum 5560
-
-;; The version number is in the most significant 4 bits of the time
-;; stamp [erratum ommited].
-;; Msb0  Msb1  Msb2  Msb3   Version  Description
-;;  0     1     0     0        4     The randomly or pseudo-
-;;                                   randomly generated version
-;;                                   specified in this document.
-
-(define (byte-set-version-number b)
-  (bitwise-ior #b01000000
-               (bitwise-and #b00001111 b)))
-
-(module+ test
-  (test-case
-   "byte-set-version-number"
-   (for ([b (in-range 256)])
-     (test-case
-      (format "b = ~v" b)
-      (define s (byte->binary b))
-      (define b* (byte-set-version-number b))
-      (define s* (byte->binary b*))
-      (check-regexp-match #rx"^0100" s*)
-      (check-regexp-match #rx"^4"
-                          (bytes->hex-string (bytes b*)))
-      (check-equal? (substring s* 4)
-                    (substring s 4))))))
-
-(define (bytes-update! bs i proc)
-  (bytes-set! bs i (proc (bytes-ref bs i))))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (uuid-generate*)
+(define (uuid-generate* #:libuuid? [libuuid? #f])
   (define bs
     (crypto-random-bytes 16))
-  (bytes-update! bs 6 byte-set-version-number)
-  (bytes-update! bs 8 byte-set-variant)
+  (bytes-set-variant-and-version4! bs #:libuuid? libuuid?)
   (uuid-bytes->string bs))
 
 (module+ test
