@@ -115,9 +115,9 @@
 (define (byte-set-version-number* b vers)
   (bitwise-ior vers
                (bitwise-and #b00001111 b)))
-(define-syntax-parse-rule (define-version-numbers [4bits:exact-positive-integer
-                                                   V:id]
-                            ...)
+(define-simple-macro (define-version-numbers [4bits:exact-positive-integer
+                                              V:id]
+                       ...)
   #:with ([byte-set-version-numberV bytes-set-variant-and-versionV!] ...)
   (for/list ([id ($ V)])
     (map (λ (fmt)
