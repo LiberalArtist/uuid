@@ -30,15 +30,11 @@
 
 (define-syntax define-hash-uuid-builders
   (syntax-parser
-    [(_ algo:id bsvav!-proc:expr hash-bytes-proc:expr)
-     #:with bsvav! #'bytes-set-variant-and-version!
-     #:with hash-bytes (format-id #'xyz "~a-bytes-for-uuid" #'algo)
+    [(_ algo:id bsvav! hash-bytes)
      #:with (build-algo-uuid build-algo-uuid-string)
      (for/list ([sfx '("" "-string")])
        (format-id #'algo "build-~a-uuid~a" #'algo sfx #:subs? #t))
-     #`(begin
-         (define bsvav! bsvav!-proc)
-         (define hash-bytes hash-bytes-proc)
-         (define-uuid-generators (build-algo-uuid ns-uuid bs #:libuuid? [libuuid? #f])
-           #:string build-algo-uuid-string
-           (build-hash-uuid ns-uuid bs bsvav! hash-bytes #:libuuid? [libuuid? #f])))]))
+     (quasisyntax/loc this-syntax
+       (define-uuid-generators (build-algo-uuid ns-uuid bs #:libuuid? [libuuid? #f])
+         #:string build-algo-uuid-string
+         (build-hash-uuid ns-uuid bs bsvav! hash-bytes #:libuuid? libuuid?)))]))

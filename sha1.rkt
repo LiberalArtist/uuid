@@ -21,3 +21,14 @@
   bytes-set-variant-and-version5!
   (λ (in)
     (subbytes (sha1-bytes in) 0 16)))
+
+(module+ test
+  (require (submod "..")
+           (prefix-in ns- "namespace.rkt")
+           rackunit)
+  (for ([libuuid? '(#t #f)])
+    (test-case
+     (format "#:libuuid? ~v" libuuid?)
+     ;; example taken from the Python documentation
+     (check-eq? (build-sha1-uuid ns-dns #"python.org")
+                '886313e1-3b8a-5372-9b90-0c9aee199e5d))))
