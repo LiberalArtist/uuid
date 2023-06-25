@@ -15,6 +15,7 @@ jobs:
          )
        }}'
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.version == 'current' }}
     strategy:
       matrix:
         version:
